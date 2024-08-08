@@ -1,5 +1,5 @@
 import { PassportStrategy } from "@nestjs/passport";
-import { Profile, Strategy } from "passport-google-oauth20";
+import { Profile, Strategy, VerifyCallback } from "passport-google-oauth20";
 import { AuthService } from "../auth.service";
 import { forwardRef, Inject } from "@nestjs/common";
 
@@ -9,31 +9,25 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "oauth") {
     private readonly authService: AuthService
   ) {
     super({
-      clientID:
-        "427087515565-69m45ua445baiq2vhfageqgp4qaeukl1.apps.googleusercontent.com",
-      clientSecret: "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",
+      clientID: process.env.CLIENT_ID as string,
+      clientSecret: process.env.CLIENT_SECRET as string,
       callbackURL: "http://localhost:3000/api/v1/auth/google/redirect",
       scope: ["profile", "email"],
-      accessType: "offline",
-      prompt: "consent",
     });
   }
-  async validate(accessToken: string, refreshToken: string, profile: Profile) {
-    console.log(
-      "accessToken => ",
-      accessToken,
-      " refreshToken => ",
-      refreshToken,
-      " profile => ",
-      profile
-    );
-
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: Profile,
+    done: VerifyCallback
+  ) {
     const user = await this.authService.validateUser({
       displayName: profile.displayName,
       email: profile.emails[0].value,
       photo: profile.photos[0].value,
+      isVerifyEmail: profile.emails[0].verified,
     });
 
-    return user || null;
+    done(null, user);
   }
 }

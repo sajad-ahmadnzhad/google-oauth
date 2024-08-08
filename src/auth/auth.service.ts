@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { UserDetails } from "./auth.interface";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
@@ -7,7 +7,7 @@ import { Repository } from "typeorm";
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>
   ) {}
 
   async validateUser(details: UserDetails) {
@@ -19,6 +19,7 @@ export class AuthService {
       name: details.displayName,
       email: details.email,
       avatarURL: details.photo,
+      isVerifyEmail: details.isVerifyEmail,
     });
 
     return this.userRepository.save(newUser);
@@ -28,9 +29,4 @@ export class AuthService {
     const user = await this.userRepository.findOneBy({ id });
     return user;
   }
-
-  async handelOauthCallback(code: string) {
-    
-  }
-
 }

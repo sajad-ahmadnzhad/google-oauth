@@ -16,4 +16,7 @@ export class User {
 
   @Column({ nullable: true, type: "varchar", select: false, default: null })
   password?: string;
+
+  @Column({ type: "boolean", default: false, nullable: false })
+  isVerifyEmail: boolean;
 }
