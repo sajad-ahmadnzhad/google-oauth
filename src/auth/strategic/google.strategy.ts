@@ -14,6 +14,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "oauth") {
       clientSecret: "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",
       callbackURL: "http://localhost:3000/api/v1/auth/google/redirect",
       scope: ["profile", "email"],
+      accessType: "offline",
+      prompt: "consent",
     });
   }
   async validate(accessToken: string, refreshToken: string, profile: Profile) {

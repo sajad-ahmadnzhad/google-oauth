@@ -1,5 +1,6 @@
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Controller, Get, Req, UseGuards } from "@nestjs/common";
 import { GoogleGuard } from "./guards/google.guard";
+import { Request } from "express";
 
 @Controller("auth")
 export class AuthController {
@@ -13,5 +14,10 @@ export class AuthController {
   @UseGuards(GoogleGuard)
   handleRedirect() {
     return { message: "OK" };
+  }
+
+  @Get("status")
+  user(@Req() req: Request) {
+    return req.user;
   }
 }

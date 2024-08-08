@@ -1,6 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { CreateAuthDto } from "./dto/create-auth.dto";
-import { UpdateAuthDto } from "./dto/update-auth.dto";
 import { UserDetails } from "./auth.interface";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
@@ -13,8 +11,6 @@ export class AuthService {
   ) {}
 
   async validateUser(details: UserDetails) {
-    console.log("AuthService", details);
-
     const user = await this.userRepository.findOneBy({ email: details.email });
 
     if (user) return user;
@@ -26,5 +22,10 @@ export class AuthService {
     });
 
     return this.userRepository.save(newUser);
+  }
+
+  async findUser(id: number) {
+    const user = await this.userRepository.findOneBy({ id });
+    return user;
   }
 }
