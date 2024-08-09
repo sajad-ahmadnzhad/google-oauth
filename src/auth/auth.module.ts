@@ -6,6 +6,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 import { PassportModule } from "@nestjs/passport";
 import { SessionSerialize } from "./serialize/session.serialize";
+import { GithubStrategy } from "./strategic/github.strategy";
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { SessionSerialize } from "./serialize/session.serialize";
     PassportModule.register({ session: true }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, GoogleStrategy, SessionSerialize],
+  providers: [AuthService, GoogleStrategy, SessionSerialize, GithubStrategy],
 })
 export class AuthModule {}

@@ -1,20 +1,22 @@
-import { PassportStrategy } from "@nestjs/passport";
-import { Profile, Strategy, VerifyCallback } from "passport-google-oauth20";
-import { AuthService } from "../auth.service";
 import { forwardRef, Inject } from "@nestjs/common";
+import { PassportStrategy } from "@nestjs/passport";
+import { Profile, Strategy } from "passport-github2";
+import { VerifyCallback } from "passport-google-oauth20";
+import { AuthService } from "../auth.service";
 
-export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
+export class GithubStrategy extends PassportStrategy(Strategy, "github") {
   constructor(
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService
   ) {
     super({
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:3000/api/v1/auth/google/redirect",
-      scope: ["profile", "email"],
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: "http://localhost:3000/api/v1/auth/github/redirect",
+      scope: ["profile"],
     });
   }
+
   async validate(
     accessToken: string,
     refreshToken: string,
@@ -23,9 +25,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
   ) {
     const user = await this.authService.validateUser({
       displayName: profile.displayName,
-      email: profile.emails[0].value,
+      email: profile.username,
       photo: profile.photos[0].value,
-      isVerifyEmail: profile.emails[0].verified,
+      isVerifyEmail: true,
     });
 
     done(null, user);

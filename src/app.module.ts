@@ -5,23 +5,30 @@ import { AuthModule } from "./auth/auth.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CacheModule } from "@nestjs/cache-manager";
 import { redisStore } from "cache-manager-redis-yet";
-import { config } from "dotenv";
 import * as path from "path";
-
-config({ path: path.join(process.cwd(), "/.env") });
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: path.join(process.cwd(), "/.env"),
+    }),
     AuthModule,
-    TypeOrmModule.forRoot({
-      type: "mysql",
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      synchronize: true,
-      autoLoadEntities: true,
+    TypeOrmModule.forRootAsync({
+      useFactory(configService: ConfigService) {
+        return {
+          type: "mysql",
+          host: configService.get("DB_HOST"),
+          port: parseInt(configService.get("DB_PORT")),
+          username: configService.get("DB_USERNAME"),
+          password: configService.get("DB_PASSWORD"),
+          database: configService.get("DB_NAME"),
+          synchronize: true,
+          autoLoadEntities: true,
+        };
+      },
+      inject: [ConfigService],
     }),
     CacheModule.registerAsync({
       isGlobal: true,
